@@ -4,27 +4,27 @@
 	========================================================================
 	struct timespec {
 	time_t tv_sec; // seconds 
-	long tv_nsec; // and nanoseconds ÄÉÃë
+	long tv_nsec; // and nanoseconds çº³ç§’
 	};
 	========================================================================
 	struct timeval {
 	time_t tv_sec; // seconds 
-	long tv_usec; // microseconds Î¢Ãë
+	long tv_usec; // microseconds å¾®ç§’
 	};
 	========================================================================
  	#include <sys/time.h>
 	int gettimeofday(struct timeval*tv, struct timezone *tz);
 	struct timezone{
-	int tz_minuteswest; //G.M.T.(Greenwich Mean Time) ÓëÁãÊ±ÇøµÄÊ±¼ä²î 
-	int tz_dsttime;     //ÏÄÁîÊ±ĞŞÕı, ÏÄÁîÊ±Îª1
+	int tz_minuteswest; //G.M.T.(Greenwich Mean Time) ä¸é›¶æ—¶åŒºçš„æ—¶é—´å·® 
+	int tz_dsttime;     //å¤ä»¤æ—¶ä¿®æ­£, å¤ä»¤æ—¶ä¸º1
 	========================================================================
 	#include<time.h>
 	int clock_gettime(clockid_t clk_id,struct timespec *tp);
-	clk_id : ¼ìË÷ºÍÉèÖÃµÄclk_idÖ¸¶¨µÄÊ±ÖÓÊ±¼ä¡£
-	CLOCK_REALTIME:ÏµÍ³ÊµÊ±Ê±¼ä,ËæÏµÍ³ÊµÊ±Ê±¼ä¸Ä±ä¶ø¸Ä±ä, UTC1970-1-1 0:0:0 ¿ªÊ¼ 
-	CLOCK_MONOTONIC:´ÓÏµÍ³Æô¶¯ÕâÒ»¿ÌÆğ¿ªÊ¼¼ÆÊ±,²»ÊÜÏµÍ³Ê±¼ä±»ÓÃ»§¸Ä±äµÄÓ°Ïì
-	CLOCK_PROCESS_CPUTIME_ID:±¾½ø³Ìµ½µ±Ç°´úÂëÏµÍ³CPU»¨·ÑµÄÊ±¼ä
-	CLOCK_THREAD_CPUTIME_ID:±¾Ïß³Ìµ½µ±Ç°´úÂëÏµÍ³CPU»¨·ÑµÄÊ±¼ä
+	clk_id : æ£€ç´¢å’Œè®¾ç½®çš„clk_idæŒ‡å®šçš„æ—¶é’Ÿæ—¶é—´ã€‚
+	CLOCK_REALTIME:ç³»ç»Ÿå®æ—¶æ—¶é—´,éšç³»ç»Ÿå®æ—¶æ—¶é—´æ”¹å˜è€Œæ”¹å˜, UTC1970-1-1 0:0:0 å¼€å§‹ 
+	CLOCK_MONOTONIC:ä»ç³»ç»Ÿå¯åŠ¨è¿™ä¸€åˆ»èµ·å¼€å§‹è®¡æ—¶,ä¸å—ç³»ç»Ÿæ—¶é—´è¢«ç”¨æˆ·æ”¹å˜çš„å½±å“
+	CLOCK_PROCESS_CPUTIME_ID:æœ¬è¿›ç¨‹åˆ°å½“å‰ä»£ç ç³»ç»ŸCPUèŠ±è´¹çš„æ—¶é—´
+	CLOCK_THREAD_CPUTIME_ID:æœ¬çº¿ç¨‹åˆ°å½“å‰ä»£ç ç³»ç»ŸCPUèŠ±è´¹çš„æ—¶é—´
  	========================================================================
  */
 #include <stdio.h> 
@@ -121,14 +121,13 @@ int main()
 		clock_gettime(CLOCK_MONOTONIC, &ts_2);
 		printf("\nFunction usleep(10000): \n");
 		Latency_cnt(&ts_1, &ts_2);
+		// usleep is affect by absolute latency of system (maybe not correct!)
 	}
 	
 	// 3. get time of day
 	ret = gettimeofday(&tv, NULL);
 	printf("\nFunction gettimeofday: \n");
 	printf("RET[%d] Time Sec[%ld] usec[%ld]\n" , ret, tv.tv_sec, tv.tv_usec);
-	
-	
 	
 	return 0;
 }
