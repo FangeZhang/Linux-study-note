@@ -4,27 +4,27 @@
 	========================================================================
 	struct timespec {
 	time_t tv_sec; // seconds 
-	long tv_nsec; // and nanoseconds çº³ç§’
+	long tv_nsec; // and nanoseconds ÄÉÃë
 	};
 	========================================================================
 	struct timeval {
 	time_t tv_sec; // seconds 
-	long tv_usec; // microseconds å¾®ç§’
+	long tv_usec; // microseconds Î¢Ãë
 	};
 	========================================================================
  	#include <sys/time.h>
 	int gettimeofday(struct timeval*tv, struct timezone *tz);
 	struct timezone{
-	int tz_minuteswest; //G.M.T.(Greenwich Mean Time) ä¸é›¶æ—¶åŒºçš„æ—¶é—´å·® 
-	int tz_dsttime;     //å¤ä»¤æ—¶ä¿®æ­£, å¤ä»¤æ—¶ä¸º1
+	int tz_minuteswest; //G.M.T.(Greenwich Mean Time) ÓëÁãÊ±ÇøµÄÊ±¼ä²î 
+	int tz_dsttime;     //ÏÄÁîÊ±ĞŞÕı, ÏÄÁîÊ±Îª1
 	========================================================================
 	#include<time.h>
 	int clock_gettime(clockid_t clk_id,struct timespec *tp);
-	clk_id : æ£€ç´¢å’Œè®¾ç½®çš„clk_idæŒ‡å®šçš„æ—¶é’Ÿæ—¶é—´ã€‚
-	CLOCK_REALTIME:ç³»ç»Ÿå®æ—¶æ—¶é—´,éšç³»ç»Ÿå®æ—¶æ—¶é—´æ”¹å˜è€Œæ”¹å˜, UTC1970-1-1 0:0:0 å¼€å§‹ 
-	CLOCK_MONOTONIC:ä»ç³»ç»Ÿå¯åŠ¨è¿™ä¸€åˆ»èµ·å¼€å§‹è®¡æ—¶,ä¸å—ç³»ç»Ÿæ—¶é—´è¢«ç”¨æˆ·æ”¹å˜çš„å½±å“
-	CLOCK_PROCESS_CPUTIME_ID:æœ¬è¿›ç¨‹åˆ°å½“å‰ä»£ç ç³»ç»ŸCPUèŠ±è´¹çš„æ—¶é—´
-	CLOCK_THREAD_CPUTIME_ID:æœ¬çº¿ç¨‹åˆ°å½“å‰ä»£ç ç³»ç»ŸCPUèŠ±è´¹çš„æ—¶é—´
+	clk_id : ¼ìË÷ºÍÉèÖÃµÄclk_idÖ¸¶¨µÄÊ±ÖÓÊ±¼ä¡£
+	CLOCK_REALTIME:ÏµÍ³ÊµÊ±Ê±¼ä,ËæÏµÍ³ÊµÊ±Ê±¼ä¸Ä±ä¶ø¸Ä±ä, UTC1970-1-1 0:0:0 ¿ªÊ¼ 
+	CLOCK_MONOTONIC:´ÓÏµÍ³Æô¶¯ÕâÒ»¿ÌÆğ¿ªÊ¼¼ÆÊ±,²»ÊÜÏµÍ³Ê±¼ä±»ÓÃ»§¸Ä±äµÄÓ°Ïì
+	CLOCK_PROCESS_CPUTIME_ID:±¾½ø³Ìµ½µ±Ç°´úÂëÏµÍ³CPU»¨·ÑµÄÊ±¼ä
+	CLOCK_THREAD_CPUTIME_ID:±¾Ïß³Ìµ½µ±Ç°´úÂëÏµÍ³CPU»¨·ÑµÄÊ±¼ä
  	========================================================================
  */
 #include <stdio.h> 
@@ -32,17 +32,23 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+//#define PARAM_CONVERT_BY_POINTER
+ 
 // test latency function
+#if !defined(PARAM_CONVERT_BY_POINTER)
+int Latency_cnt(struct timespec &tv1, struct timespec &tv2)
+#else
 int Latency_cnt(struct timespec *tv1, struct timespec *tv2)
+#endif
 {
 	double time_interval = 0;
 	long long temp1 = 0, temp2 = 0;
 	long long diff = 0;
-#if 0
-	temp1 = tv1.tv_sec * 1000000000 + tv1->tv_nsec;
+#if !defined(PARAM_CONVERT_BY_POINTER)
+	temp1 = tv1.tv_sec * 1000000000 + tv1.tv_nsec;
 	printf("Time 1 = %lld ns\n", temp1);
 
-	temp2 = tv2.tv_sec * 1000000000 + tv2->tv_nsec;
+	temp2 = tv2.tv_sec * 1000000000 + tv2.tv_nsec;
 	printf("Time 2 = %lld ns\n", temp2);
 #else
 	temp1 = tv1->tv_sec * 1000000000 + tv1->tv_nsec;
@@ -90,37 +96,20 @@ int main()
 		sleep(1);
 		clock_gettime(CLOCK_MONOTONIC, &ts_2);
 		printf("\nFunction sleep(1): \n");
+		#if !defined(PARAM_CONVERT_BY_POINTER)
+		Latency_cnt(ts_1, ts_2);
+		#else
 		Latency_cnt(&ts_1, &ts_2);
+		#endif
 		clock_gettime(CLOCK_MONOTONIC, &ts_1);
-		usleep(1);
-		clock_gettime(CLOCK_MONOTONIC, &ts_2);
-		printf("\nFunction usleep(1): \n");
-		Latency_cnt(&ts_1, &ts_2);	
-		clock_gettime(CLOCK_MONOTONIC, &ts_1);
-		usleep(10);
-		clock_gettime(CLOCK_MONOTONIC, &ts_2);
-		printf("\nFunction usleep(10): \n");
-		Latency_cnt(&ts_1, &ts_2);
-		clock_gettime(CLOCK_MONOTONIC, &ts_1);
-		usleep(100);
-		clock_gettime(CLOCK_MONOTONIC, &ts_2);
-		printf("\nFunction usleep(100): \n");
-		Latency_cnt(&ts_1, &ts_2);
-		clock_gettime(CLOCK_MONOTONIC, &ts_1);
-		usleep(1000);
-		clock_gettime(CLOCK_MONOTONIC, &ts_2);
-		printf("\nFunction usleep(1000): \n");
-		Latency_cnt(&ts_1, &ts_2);
-		clock_gettime(CLOCK_MONOTONIC, &ts_1);
-		usleep(10000);
+		usleep(100000);  // 100 000 ms (usleep( + micro second))
 		clock_gettime(CLOCK_MONOTONIC, &ts_2);
 		printf("\nFunction usleep(10000): \n");
+		#if !defined(PARAM_CONVERT_BY_POINTER)
+		Latency_cnt(ts_1, ts_2);
+		#else
 		Latency_cnt(&ts_1, &ts_2);
-		clock_gettime(CLOCK_MONOTONIC, &ts_1);
-		usleep(100000);
-		clock_gettime(CLOCK_MONOTONIC, &ts_2);
-		printf("\nFunction usleep(10000): \n");
-		Latency_cnt(&ts_1, &ts_2);
+		#endif
 		// usleep is affect by absolute latency of system (maybe not correct!)
 	}
 	
