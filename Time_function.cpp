@@ -50,7 +50,7 @@ int main()
 	printf("Clk_id [CLOCK_PROCESS_CPUTIME_ID]   -- RET[%d] Time Sec[%ld] nsec[%ld]\n" , ret, ts.tv_sec, ts.tv_nsec);
 	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
 	// CLOCK_THREAD_CPUTIME_ID: Elapsed time of thread to this place. (process > thread)
-	printf("Clk_id [CLOCK_THREAD_CPUTIME_ID]    -- RET[%d] Time Sec[%ld] nsec[%ld]\n" , ret, ts.tv_sec, ts.tv_nsec);WW
+	printf("Clk_id [CLOCK_THREAD_CPUTIME_ID]    -- RET[%d] Time Sec[%ld] nsec[%ld]\n" , ret, ts.tv_sec, ts.tv_nsec);
 
 	ret = gettimeofday(&tv, NULL);
 	printf("\nFunction gettimeofday: \n");
